@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#f5f7f2" />
+  <title>SONORA — Your creative space</title>
+  <style>
+    :root {
+      --bg: #f4f6f1;
+      --paper: rgba(255,255,255,.76);
+      --paper-strong: rgba(255,255,255,.91);
+      --ink: #202820;
+      --muted: #788178;
+      --line: rgba(47, 65, 47, .12);
+      --green: #547b53;
+      --green-dark: #3f6340;
+      --green-soft: #eaf1e7;
+      --yellow: #e9c85c;
+      --danger: #b65e53;
+      --shadow: 0 24px 70px rgba(48, 64, 44, .10), 0 3px 12px rgba(48, 64, 44, .04);
+      --radius: 22px;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { min-height: 100%; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        radial-gradient(ellipse at 13% 15%, rgba(212, 229, 202, .65), transparent 34%),
+        radial-gradient(ellipse at 88% 83%, rgba(239, 222, 157, .25), transparent 30%),
+        linear-gradient(135deg, #f7f8f4 0%, #eff3eb 52%, #f7f7f1 100%);
+      font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      display: grid;
+      place-items: center;
+      padding: 34px 20px;
+      overflow-x: hidden;
+    }
+
+    body::before, body::after {
+      content: "";
+      position: fixed;
+      pointer-events: none;
+      border: 1px solid rgba(255,255,255,.65);
+      border-radius: 50%;
+      filter: blur(.2px);
+    }
+    body::before { width: 520px; height: 520px; top: -330px; right: -130px; }
+    body::after { width: 390px; height: 390px; bottom: -270px; left: -110px; }
+
+    button, input { font: inherit; }
+    button { cursor: pointer; }
+
+    .shell {
+      width: min(100%, 460px);
+      position: relative;
+      z-index: 1;
+      animation: arrive .65s cubic-bezier(.2,.75,.25,1) both;
+    }
+    @keyframes arrive {
+      from { opacity: 0; transform: translateY(13px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 11px;
+      margin-bottom: 25px;
+    }
+    .brand-mark {
+      width: 34px;
+      height: 34px;
+      display: grid;
+      place-items: center;
+      border-radius: 11px;
+      color: white;
+      background: linear-gradient(145deg, #6d9568, #456a46);
+      box-shadow: 0 5px 12px rgba(69,106,70,.2);
+    }
+    .brand-mark svg { width: 19px; height: 19px; }
+    .brand-name {
+      font-size: 16px;
+      letter-spacing: .19em;
+      font-weight: 750;
+    }
+    .brand-caption {
+      color: #899287;
+      font-size: 10px;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      margin-left: 2px;
+      align-self: end;
+      padding-bottom: 2px;
+    }
+
+    .card {
+      background: var(--paper);
+      border: 1px solid rgba(255,255,255,.88);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(22px) saturate(1.15);
+      -webkit-backdrop-filter: blur(22px) saturate(1.15);
+      overflow: hidden;
+    }
+    .card-inner { padding: 31px 34px 29px; }
+
+    .eyebrow {
+      color: var(--green);
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: .16em;
+      font-weight: 750;
+      margin-bottom: 10px;
+    }
+    h1 {
+      font-size: 27px;
+      letter-spacing: -.045em;
+      line-height: 1.12;
+      margin: 0;
+      font-weight: 680;
+    }
+    .intro {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
+      margin: 9px 0 24px;
+    }
+
+    .tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4px;
+      padding: 4px;
+      border-radius: 12px;
+      background: rgba(235,239,232,.88);
+      border: 1px solid rgba(66,91,62,.07);
+      margin-bottom: 25px;
+    }
+    .tab {
+      border: 0;
+      background: transparent;
+      color: #7a8478;
+      border-radius: 9px;
+      padding: 11px 10px;
+      font-size: 12px;
+      font-weight: 650;
+      transition: .2s ease;
+    }
+    .tab[aria-selected="true"] {
+      background: rgba(255,255,255,.95);
+      color: var(--ink);
+      box-shadow: 0 2px 7px rgba(38,53,36,.08), 0 0 0 1px rgba(51,77,47,.06);
+    }
+
+    .form-panel { display: none; }
+    .form-panel.active { display: block; animation: panelIn .24s ease both; }
+    @keyframes panelIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+    .field { margin-bottom: 16px; }
+    .field-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 7px;
+    }
+    label {
+      display: block;
+      color: #465046;
+      font-size: 11px;
+      font-weight: 680;
+      letter-spacing: .015em;
+    }
+    .input-wrap { position: relative; }
+    input {
+      width: 100%;
+      height: 47px;
+      border: 1px solid rgba(63,83,59,.15);
+      border-radius: 10px;
+      background: rgba(255,255,255,.72);
+      padding: 0 13px;
+      color: var(--ink);
+      font-size: 13px;
+      outline: none;
+      transition: border .18s ease, box-shadow .18s ease, background .18s ease;
+    }
+    input::placeholder { color: #a5ada2; }
+    input:focus {
+      border-color: rgba(81,124,78,.7);
+      background: rgba(255,255,255,.96);
+      box-shadow: 0 0 0 3px rgba(99,145,91,.12);
+    }
+    .password-input { padding-right: 65px; }
+    .toggle-password {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      border: 0;
+      padding: 5px 3px;
+      background: transparent;
+      color: #7a8778;
+      font-size: 10px;
+      font-weight: 700;
+    }
+    .toggle-password:hover { color: var(--green-dark); }
+
+    .form-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: -1px 0 19px;
+      min-height: 17px;
+    }
+    .remember {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      color: #7c867b;
+      font-size: 10px;
+      cursor: pointer;
+    }
+    .remember input {
+      appearance: none;
+      width: 13px;
+      height: 13px;
+      min-width: 13px;
+      height: 13px;
+      padding: 0;
+      border-radius: 4px;
+      background: rgba(255,255,255,.8);
+      border: 1px solid rgba(63,83,59,.23);
+      cursor: pointer;
+    }
+    .remember input:checked { background: var(--green); border-color: var(--green); }
+    .remember input:checked::after {
+      content: "✓";
+      display: block;
+      color: white;
+      font-size: 9px;
+      line-height: 11px;
+      text-align: center;
+    }
+    .subtle-link {
+      border: 0;
+      background: transparent;
+      padding: 0;
+      color: var(--green);
+      font-size: 10px;
+      font-weight: 700;
+    }
+
+    .primary {
+      width: 100%;
+      height: 48px;
+      border: 0;
+      border-radius: 10px;
+      color: white;
+      background: linear-gradient(105deg, #60865b, #4c754b);
+      box-shadow: 0 6px 13px rgba(67,106,65,.17), inset 0 1px 0 rgba(255,255,255,.17);
+      font-size: 12px;
+      font-weight: 720;
+      letter-spacing: .015em;
+      transition: transform .16s ease, box-shadow .16s ease, filter .16s ease;
+    }
+    .primary:hover { filter: brightness(1.045); box-shadow: 0 8px 17px rgba(67,106,65,.22); transform: translateY(-1px); }
+    .primary:active { transform: translateY(0); }
+    .primary:focus-visible, .tab:focus-visible, .toggle-password:focus-visible, .subtle-link:focus-visible {
+      outline: 3px solid rgba(91,137,84,.28);
+      outline-offset: 3px;
+    }
+
+    .message {
+      display: none;
+      margin: 0 0 14px;
+      border-radius: 9px;
+      padding: 10px 12px;
+      font-size: 11px;
+      line-height: 1.45;
+    }
+    .message.show { display: block; }
+    .message.error { color: #91483f; background: #fbefec; border: 1px solid #f1d7d1; }
+    .message.success { color: #426b42; background: #edf5e9; border: 1px solid #dcebd5; }
+
+    .card-foot {
+      border-top: 1px solid var(--line);
+      margin-top: 24px;
+      padding-top: 17px;
+      text-align: center;
+      color: #929b90;
+      font-size: 10px;
+      line-height: 1.5;
+    }
+    .card-foot strong { color: #687666; font-weight: 700; }
+
+    .bottom-note {
+      text-align: center;
+      margin-top: 19px;
+      color: #99a196;
+      font-size: 10px;
+      letter-spacing: .01em;
+    }
+    .bottom-note span { color: #7c9278; }
+
+    /* Signed-in prototype screen */
+    .welcome-screen { display: none; text-align: center; padding: 43px 34px 34px; }
+    .welcome-screen.active { display: block; animation: panelIn .3s ease both; }
+    .welcome-icon {
+      width: 58px;
+      height: 58px;
+      display: grid;
+      place-items: center;
+      margin: 0 auto 20px;
+      border-radius: 19px;
+      background: linear-gradient(145deg, #edf4e9, #dce9d5);
+      color: var(--green);
+      border: 1px solid rgba(91,128,82,.13);
+    }
+    .welcome-icon svg { width: 27px; height: 27px; }
+    .welcome-screen h1 { font-size: 30px; }
+    .welcome-screen .intro { margin: 11px auto 27px; max-width: 270px; }
+    .welcome-user {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      border-radius: 100px;
+      padding: 8px 12px;
+      background: #edf3e9;
+      color: #52734d;
+      font-size: 11px;
+      font-weight: 700;
+      margin-bottom: 23px;
+    }
+    .welcome-user::before {
+      content: "";
+      width: 6px; height: 6px; border-radius: 50%; background: #86a66d;
+    }
+    .back-button {
+      width: 100%;
+      height: 44px;
+      border-radius: 10px;
+      background: rgba(255,255,255,.55);
+      border: 1px solid rgba(64,89,59,.16);
+      color: #5e705b;
+      font-size: 11px;
+      font-weight: 700;
+      transition: background .18s ease, border .18s ease;
+    }
+    .back-button:hover { background: white; border-color: rgba(64,89,59,.3); }
+
+    .demo-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: #8a8d70;
+      background: rgba(239,235,205,.45);
+      border: 1px solid rgba(202,187,119,.22);
+      padding: 6px 9px;
+      border-radius: 100px;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: .04em;
+      margin-top: 15px;
+    }
+    .demo-label::before { content: ""; width: 5px; height: 5px; border-radius: 50%; background: var(--yellow); }
+
+    @media (max-width: 520px) {
+      body { padding: 23px 15px; }
+      .card-inner { padding: 27px 23px 24px; }
+      .welcome-screen { padding: 38px 23px 27px; }
+      h1 { font-size: 25px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <div class="brand" aria-label="SONORA">
+      <div class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none">
+          <path d="M4 14.5V9.5M8 18V6M12 15.5V8.5M16 19V5M20 13.5v-3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="brand-name">SONORA</div>
+      <div class="brand-caption">sound, shaped</div>
+    </div>
+
+    <section class="card" aria-label="SONORA account">
+      <div id="authView" class="card-inner">
+        <div class="eyebrow">Your creative space</div>
+        <h1 id="heading">Welcome back.</h1>
+        <p class="intro" id="intro">Sign in to pick up where your ideas left off.</p>
+
+        <div class="tabs" role="tablist" aria-label="Account options">
+          <button class="tab" id="signInTab" role="tab" aria-selected="true" aria-controls="signInPanel" type="button">Sign in</button>
+          <button class="tab" id="signUpTab" role="tab" aria-selected="false" aria-controls="signUpPanel" type="button">Create account</button>
+        </div>
+
+        <section class="form-panel active" id="signInPanel" role="tabpanel" aria-labelledby="signInTab">
+          <form id="signInForm" novalidate>
+            <div class="field">
+              <div class="field-head"><label for="loginEmail">Email address</label></div>
+              <input id="loginEmail" name="email" type="email" placeholder="you@example.com" autocomplete="email" required />
+            </div>
+            <div class="field">
+              <div class="field-head"><label for="loginPassword">Password</label></div>
+              <div class="input-wrap">
+                <input class="password-input" id="loginPassword" name="password" type="password" placeholder="Enter your password" autocomplete="current-password" required />
+                <button class="toggle-password" type="button" data-target="loginPassword" aria-label="Show password">Show</button>
+              </div>
+            </div>
+            <div class="form-meta">
+              <label class="remember"><input type="checkbox" id="rememberMe" /> Keep me signed in</label>
+              <button class="subtle-link" type="button" id="switchToSignUp">Create an account</button>
+            </div>
+            <div class="message" id="signInMessage" role="alert"></div>
+            <button class="primary" type="submit">Sign in to SONORA <span aria-hidden="true">↗</span></button>
+          </form>
+        </section>
+
+        <section class="form-panel" id="signUpPanel" role="tabpanel" aria-labelledby="signUpTab">
+          <form id="signUpForm" novalidate>
+            <div class="field">
+              <div class="field-head"><label for="signupEmail">Email address</label></div>
+              <input id="signupEmail" name="email" type="email" placeholder="you@example.com" autocomplete="email" required />
+            </div>
+            <div class="field">
+              <div class="field-head"><label for="signupUsername">Choose a username</label></div>
+              <input id="signupUsername" name="username" type="text" placeholder="3–32 characters" autocomplete="username" minlength="3" maxlength="32" required />
+            </div>
+            <div class="field">
+              <div class="field-head"><label for="signupPassword">Password</label></div>
+              <div class="input-wrap">
+                <input class="password-input" id="signupPassword" name="password" type="password" placeholder="At least 8 characters" autocomplete="new-password" required />
+                <button class="toggle-password" type="button" data-target="signupPassword" aria-label="Show password">Show</button>
+              </div>
+            </div>
+            <div class="field">
+              <div class="field-head"><label for="confirmPassword">Confirm password</label></div>
+              <div class="input-wrap">
+                <input class="password-input" id="confirmPassword" name="confirmPassword" type="password" placeholder="Enter your password again" autocomplete="new-password" required />
+                <button class="toggle-password" type="button" data-target="confirmPassword" aria-label="Show password">Show</button>
+              </div>
+            </div>
+            <div class="message" id="signUpMessage" role="alert"></div>
+            <button class="primary" type="submit">Create your account <span aria-hidden="true">↗</span></button>
+          </form>
+        </section>
+
+        <div class="card-foot">Your account is securely managed by <strong>Nhost.</strong></div>
+      </div>
+
+      <div class="welcome-screen" id="welcomeView" aria-live="polite">
+        <div class="welcome-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none">
+            <path d="M5 12.5 9.3 17 19 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="eyebrow">You're signed in</div>
+        <h1 id="welcomeHeading">Hi, creator.</h1>
+        <p class="intro">Your space is ready. This is where your sounds, presets and projects will live.</p>
+        <div class="welcome-user" id="welcomeUsername">@creator</div>
+        <button class="back-button" id="signOutButton" type="button">Sign out</button>
+      </div>
+    </section>
+
+    <div class="bottom-note">A quieter space to <span>make more.</span></div>
+  </main>
+
+  <script>
+    // Interface controls work independently from the remote Nhost SDK.
+    (() => {
+      const signInTab = document.getElementById("signInTab");
+      const signUpTab = document.getElementById("signUpTab");
+      const signInPanel = document.getElementById("signInPanel");
+      const signUpPanel = document.getElementById("signUpPanel");
+      const heading = document.getElementById("heading");
+      const intro = document.getElementById("intro");
+
+      function switchTab(tab) {
+        const signingIn = tab === "signin";
+        signInTab.setAttribute("aria-selected", String(signingIn));
+        signUpTab.setAttribute("aria-selected", String(!signingIn));
+        signInPanel.classList.toggle("active", signingIn);
+        signUpPanel.classList.toggle("active", !signingIn);
+        heading.textContent = signingIn ? "Welcome back." : "Make yourself at home.";
+        intro.textContent = signingIn
+          ? "Sign in to pick up where your ideas left off."
+          : "Create an account and give your ideas a place to grow.";
+        for (const id of ["signInMessage", "signUpMessage"]) {
+          const el = document.getElementById(id);
+          el.textContent = "";
+          el.className = "message";
+        }
+      }
+
+      signInTab.addEventListener("click", () => switchTab("signin"));
+      signUpTab.addEventListener("click", () => switchTab("signup"));
+      document.getElementById("switchToSignUp").addEventListener("click", () => switchTab("signup"));
+
+      document.querySelectorAll(".toggle-password").forEach(button => {
+        button.addEventListener("click", () => {
+          const input = document.getElementById(button.dataset.target);
+          const reveal = input.type === "password";
+          input.type = reveal ? "text" : "password";
+          button.textContent = reveal ? "Hide" : "Show";
+          button.setAttribute("aria-label", reveal ? "Hide password" : "Show password");
+        });
+      });
+    })();
+
+    // Direct file:// opening blocks browser module imports; explain the limitation.
+    window.setTimeout(() => {
+      if (!window.__sonoraNhostReady && location.protocol === "file:") {
+        const message = document.getElementById("signInMessage");
+        message.textContent = "The tabs work locally, but account sign-in needs SONORA opened from a website (http:// or https://) so the Nhost connection can load.";
+        message.className = "message show error";
+      }
+    }, 1200);
+  </script>
+  <script type="module">
+    // SONORA account system — Nhost
+    // Public project connection details only. Never place admin/service keys in this file.
+    import { createClient } from "https://esm.sh/@nhost/nhost-js@4.9.0";
+    import { generatePKCEPair } from "https://esm.sh/@nhost/nhost-js@4.9.0/auth";
+
+    const nhost = createClient({
+      subdomain: "iirvytdxfliqggosmhtl",
+      region: "us-east-1"
+    });
+    window.__sonoraNhostReady = true;
+
+    const authView = document.getElementById("authView");
+    const welcomeView = document.getElementById("welcomeView");
+    const heading = document.getElementById("heading");
+    const intro = document.getElementById("intro");
+    const signInTab = document.getElementById("signInTab");
+    const signUpTab = document.getElementById("signUpTab");
+    const signInPanel = document.getElementById("signInPanel");
+    const signUpPanel = document.getElementById("signUpPanel");
+    const signInForm = document.getElementById("signInForm");
+    const signUpForm = document.getElementById("signUpForm");
+    const signInButton = signInForm.querySelector('button[type="submit"]');
+    const signUpButton = signUpForm.querySelector('button[type="submit"]');
+
+    function showMessage(id, text, type) {
+      const el = document.getElementById(id);
+      el.textContent = text;
+      el.className = `message show ${type}`;
+    }
+
+    function clearMessage(id) {
+      const el = document.getElementById(id);
+      el.textContent = "";
+      el.className = "message";
+    }
+
+    function setBusy(button, busy, label) {
+      button.disabled = busy;
+      button.style.opacity = busy ? ".7" : "";
+      button.textContent = busy ? label : button.dataset.originalLabel;
+    }
+
+    signInButton.dataset.originalLabel = signInButton.textContent;
+    signUpButton.dataset.originalLabel = signUpButton.textContent;
+
+    function switchTab(tab) {
+      const signingIn = tab === "signin";
+      signInTab.setAttribute("aria-selected", String(signingIn));
+      signUpTab.setAttribute("aria-selected", String(!signingIn));
+      signInPanel.classList.toggle("active", signingIn);
+      signUpPanel.classList.toggle("active", !signingIn);
+      heading.textContent = signingIn ? "Welcome back." : "Make yourself at home.";
+      intro.textContent = signingIn
+        ? "Sign in to pick up where your ideas left off."
+        : "Create an account and give your ideas a place to grow.";
+      clearMessage("signInMessage");
+      clearMessage("signUpMessage");
+    }
+
+    function showWelcome(user) {
+      const username = user?.metadata?.username || user?.displayName || "creator";
+      document.getElementById("welcomeHeading").textContent = `Hi, ${username}!`;
+      document.getElementById("welcomeUsername").textContent = `@${username}`;
+      authView.style.display = "none";
+      welcomeView.classList.add("active");
+    }
+
+    function showAuth() {
+      welcomeView.classList.remove("active");
+      authView.style.display = "";
+      switchTab("signin");
+    }
+
+    function readableError(error) {
+      const raw = error?.message || "Something went wrong. Please try again.";
+      if (/already.*(registered|exists)|user.*already|email.*already/i.test(raw)) {
+        return "An account with that email already exists. Try signing in instead.";
+      }
+      if (/invalid.*(email|password)|credentials/i.test(raw)) {
+        return "That email and password combination wasn't recognized.";
+      }
+      if (/unverified|not verified/i.test(raw)) {
+        return "Please verify your email using the link Nhost sent you, then sign in.";
+      }
+      if (/redirectTo-not-allowed|redirect.*not allowed/i.test(raw)) {
+        return "Nhost blocked this verification redirect. We'll need to add this website's address to the allowed redirect URLs in your Nhost settings.";
+      }
+      return raw;
+    }
+
+    // Nhost requires a real HTTP(S) app URL for the secure email-verification redirect.
+    function getAppRedirectUrl() {
+      if (!["http:", "https:"].includes(window.location.protocol)) {
+        throw new Error("Open SONORA through a website address (http:// or https://), not directly as a file. Email verification needs a website URL.");
+      }
+      const url = new URL(window.location.href);
+      url.search = "";
+      url.hash = "";
+      return url.toString();
+    }
+
+    // Complete the secure PKCE email-verification redirect when Nhost returns ?code=...
+    async function handleVerificationRedirect() {
+      const params = new URLSearchParams(window.location.search);
+      const code = params.get("code");
+      if (!code) return false;
+
+      const verifier = localStorage.getItem("nhost_pkce_verifier");
+      if (!verifier) {
+        showAuth();
+        switchTab("signin");
+        showMessage("signInMessage", "The verification link opened without its original browser verification data. Please open the link on the same browser/device where you created the account, or request another verification email.", "error");
+        return true;
+      }
+
+      try {
+        await nhost.auth.tokenExchange({ code, codeVerifier: verifier });
+        localStorage.removeItem("nhost_pkce_verifier");
+        window.history.replaceState({}, document.title, window.location.pathname);
+        const session = nhost.getUserSession();
+        if (session?.user) {
+          showWelcome(session.user);
+        } else {
+          showAuth();
+          showMessage("signInMessage", "Email verified! You can now sign in.", "success");
+        }
+      } catch (error) {
+        localStorage.removeItem("nhost_pkce_verifier");
+        showAuth();
+        showMessage("signInMessage", `We couldn't finish email verification: ${readableError(error)}`, "error");
+      }
+      return true;
+    }
+
+    signUpForm.addEventListener("submit", async event => {
+      event.preventDefault();
+      clearMessage("signUpMessage");
+
+      const email = document.getElementById("signupEmail").value.trim().toLowerCase();
+      const username = document.getElementById("signupUsername").value.trim();
+      const password = document.getElementById("signupPassword").value;
+      const confirm = document.getElementById("confirmPassword").value;
+
+      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        return showMessage("signUpMessage", "Enter a valid email address.", "error");
+      }
+      if (username.length < 3 || username.length > 32 || !/^[a-zA-Z0-9_.-]+$/.test(username)) {
+        return showMessage("signUpMessage", "Username must be 3–32 characters and use only letters, numbers, dots, underscores or hyphens.", "error");
+      }
+      if (password.length < 8 || password.length > 50) {
+        return showMessage("signUpMessage", "Use a password between 8 and 50 characters.", "error");
+      }
+      if (password !== confirm) {
+        return showMessage("signUpMessage", "Those passwords do not match. Try again.", "error");
+      }
+
+      let redirectTo;
+      try {
+        redirectTo = getAppRedirectUrl();
+      } catch (error) {
+        return showMessage("signUpMessage", error.message, "error");
+      }
+
+      setBusy(signUpButton, true, "Creating account…");
+      try {
+        const { verifier, challenge } = await generatePKCEPair();
+        localStorage.setItem("nhost_pkce_verifier", verifier);
+
+        const response = await nhost.auth.signUpEmailPassword({
+          email,
+          password,
+          options: {
+            displayName: username,
+            metadata: { username },
+            redirectTo
+          },
+          codeChallenge: challenge
+        });
+
+        document.getElementById("signUpForm").reset();
+
+        if (response.body?.session) {
+          showWelcome(response.body.session.user);
+        } else {
+          switchTab("signin");
+          document.getElementById("loginEmail").value = email;
+          showMessage("signInMessage", "Account created! Nhost has sent a verification email. Open the link in that email on this same browser/device to finish verifying your account.", "success");
+        }
+      } catch (error) {
+        localStorage.removeItem("nhost_pkce_verifier");
+        showMessage("signUpMessage", readableError(error), "error");
+      } finally {
+        setBusy(signUpButton, false);
+      }
+    });
+
+    signInForm.addEventListener("submit", async event => {
+      event.preventDefault();
+      clearMessage("signInMessage");
+
+      const email = document.getElementById("loginEmail").value.trim().toLowerCase();
+      const password = document.getElementById("loginPassword").value;
+
+      if (!email || !password) {
+        return showMessage("signInMessage", "Enter your email address and password.", "error");
+      }
+
+      setBusy(signInButton, true, "Signing in…");
+      try {
+        const response = await nhost.auth.signInEmailPassword({ email, password });
+        const user = response.body?.session?.user || nhost.getUserSession()?.user;
+        if (!user) throw new Error("Nhost did not return an active session. Please try again.");
+        showWelcome(user);
+        document.getElementById("loginPassword").value = "";
+      } catch (error) {
+        showMessage("signInMessage", readableError(error), "error");
+      } finally {
+        setBusy(signInButton, false);
+      }
+    });
+
+    document.getElementById("signOutButton").addEventListener("click", async () => {
+      try {
+        const session = nhost.getUserSession();
+        if (session?.refreshToken) {
+          await nhost.auth.signOut({ refreshToken: session.refreshToken });
+        } else {
+          nhost.clearSession();
+        }
+      } catch (error) {
+        // Clear the local session even if the network sign-out request fails.
+        nhost.clearSession();
+      }
+      document.getElementById("loginPassword").value = "";
+      showAuth();
+    });
+
+    // Restore a valid saved session when SONORA is reopened on this device.
+    (async function initialize() {
+      const handled = await handleVerificationRedirect();
+      if (handled) return;
+
+      try {
+        let session = nhost.getUserSession();
+        if (session) {
+          session = await nhost.refreshSession(60) || session;
+          if (session.user) showWelcome(session.user);
+        }
+      } catch {
+        nhost.clearSession();
+      }
+    })();
+  </script>
+</body>
+</html>
